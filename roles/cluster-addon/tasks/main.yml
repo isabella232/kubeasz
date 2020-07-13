@@ -10,6 +10,7 @@
   connection: local
   run_once: true
 
+
 - name: 注册变量 DNS_SVC_IP
   shell: echo {{ SERVICE_CIDR }}|cut -d/ -f1|awk -F. '{print $1"."$2"."$3"."$4+2}'
   register: DNS_SVC_IP
@@ -40,33 +41,6 @@
 - import_tasks: nfs-provisioner.yml
   when: '"nfs-client-provisioner" not in pod_info.stdout and nfs_provisioner_install == "yes"'
 
-#- block:
-#    - block:
-#        - name: 尝试推送离线 metallb镜像（若执行失败，可忽略）
-#          copy: src={{ base_dir }}/down/{{ metallb_offline }} dest=/opt/kube/images/{{ metallb_offline }}
-#          when: 'metallb_offline in download_info.stdout'
-#        
-#        - name: 获取metallb离线镜像推送情况
-#          command: "ls /opt/kube/images"
-#          register: image_info     
-#          
-#        - name: 导入 metallb的离线镜像（若执行失败，可忽略）
-#          shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ metallb_offline }}"
-#          when: 'metallb_offline in image_info.stdout and CONTAINER_RUNTIME == "docker"'
-#
-#        - name: 导入 metallb的离线镜像（若执行失败，可忽略）
-#          shell: "{{ bin_dir }}/ctr -n=k8s.io images import /opt/kube/images/{{ metallb_offline }}"
-#          when: 'metallb_offline in image_info.stdout and CONTAINER_RUNTIME == "containerd"'
-#
-#    - name: 生成 metallb 相关 manifests
-#      template: src=metallb/{{ item }}.j2 dest=/opt/kube/kube-system/{{ item }}
-#      with_items:
-#      - "metallb.yaml"
-#      - "{{ metallb_protocol }}.yaml"
-#
-#    - name: 创建 metallb controller 部署
-#      shell: "{{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/metallb.yaml && \
-#	      {{ bin_dir }}/kubectl apply -f /opt/kube/kube-system/{{ metallb_protocol }}.yaml"
-#      run_once: true
-#  when: '"metallb" not in pod_info.stdout and metallb_install == "yes"'
-#  ignore_errors: true
+
+- import_tasks: "metallb.yml"
+  when: '"metallb" not in pod_info.stdout and metallb_install == "yes"'

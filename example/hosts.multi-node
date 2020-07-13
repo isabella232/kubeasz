@@ -1,32 +1,34 @@
 # 'etcd' cluster should have odd member(s) (1,3,5,...)
 [etcd]
-192.168.1.1
-192.168.1.2
-192.168.1.3
+192.168.122.100 NODE_NAME=etcd1
+192.168.122.101 NODE_NAME=etcd2
+192.168.122.102 NODE_NAME=etcd3
 
 # master node(s)
-[kube_master]
-192.168.1.1
-192.168.1.2
+[kube-master]
+192.168.122.100
+192.168.122.101
+192.168.122.102
 
 # work node(s)
-[kube_node]
-192.168.1.3
-192.168.1.4
+[kube-node]
+192.168.122.105
+192.168.122.103
+192.168.122.104
 
 # [optional] harbor server, a private docker registry
 # 'NEW_INSTALL': 'true' to install a harbor server; 'false' to integrate with existed one
 [harbor]
-#192.168.1.8 NEW_INSTALL=false
+192.168.122.188 HARBOR_DOMAIN="harbor.deepmap.io" NEW_INSTALL=yes SELF_SIGNED_CERT=yes
 
 # [optional] loadbalance for accessing k8s from outside
-[ex_lb]
-#192.168.1.6 LB_ROLE=backup EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443
-#192.168.1.7 LB_ROLE=master EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443
+[ex-lb]
+192.168.122.200 LB_ROLE=backup EX_APISERVER_VIP=192.168.122.250 EX_APISERVER_PORT=8443
+192.168.122.201 LB_ROLE=master EX_APISERVER_VIP=192.168.122.250 EX_APISERVER_PORT=8443
 
 # [optional] ntp server for the cluster
 [chrony]
-#192.168.1.1
+192.168.122.100
 
 [all:vars]
 # --------- Main Variables ---------------
@@ -34,7 +36,7 @@
 CONTAINER_RUNTIME="docker"
 
 # Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
-CLUSTER_NETWORK="flannel"
+CLUSTER_NETWORK="calico"
 
 # Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
 PROXY_MODE="ipvs"
@@ -63,3 +65,6 @@ cluster_dir="{{ base_dir }}/clusters/_cluster_name_"
 
 # CA and other components cert/key Directory
 ca_dir="/etc/kubernetes/ssl"
+
+# Deploy Directory (kubeasz workspace)
+base_dir="/etc/ansible"

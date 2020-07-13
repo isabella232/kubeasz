@@ -10,7 +10,7 @@
 
   - name: 安装 haproxy_xenial 离线包
     shell: 'cd /opt/kube/packages/haproxy && tar zxf haproxy_xenial.tar.gz && \
-           dpkg -i *.deb > /tmp/install_haproxy.log 2>&1'
+           dpkg --force-confdef --force-confold -i *.deb > /tmp/install_haproxy.log 2>&1'
   when: ansible_distribution_release == "xenial"
   ignore_errors: true
 
@@ -22,7 +22,7 @@
 
   - name: 安装 haproxy_bionic 离线包
     shell: 'cd /opt/kube/packages/haproxy && tar zxf haproxy_bionic.tar.gz && \
-           dpkg -i *.deb > /tmp/install_haproxy.log 2>&1'
+           dpkg --force-confdef --force-confold -i *.deb > /tmp/install_haproxy.log 2>&1'
   when: ansible_distribution_release == "bionic"
   ignore_errors: true
 
